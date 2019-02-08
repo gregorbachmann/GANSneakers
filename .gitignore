@@ -1,0 +1,10 @@
+# Don't upload the data
+data/
+
+.DS_Store
+.idea/
+datasources/.DS_Store
+datasources/__pycache__/
+models/__pycache__/
+src/.DS_Store
+src/__pycache__/
