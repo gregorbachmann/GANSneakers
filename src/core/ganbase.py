@@ -48,7 +48,7 @@ class AdversarialNetwork:
     def visualize(self, step):
         noisy_input = self.noise_generator()
         picture, _ = self.sess.run(self.generator(self.noise_input), feed_dict={self.noise_input: noisy_input})
-        cv2.imwrite('vis' + str(step) + '.jpg', (picture[0]+1)*255/2)
+        cv2.imwrite('D:/Output' + 'vis' + str(step) + '.jpg', (picture[0]+1)*255/2)
 
     def build_graph(self):
         with tf.name_scope('RealExamples'):

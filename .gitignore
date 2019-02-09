@@ -1,5 +1,6 @@
 # Don't upload the data
 data/
+output/
 
 .DS_Store
 .idea/
