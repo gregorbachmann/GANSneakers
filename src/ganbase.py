@@ -20,7 +20,7 @@ class AdversarialNetwork:
         raise NotImplementedError('BaseModel::discriminator is not yet implemented.')
 
     def noise_generator(self):
-        noise_input = np.random.normal(size=[self.data.batch_size, self.noise_size])
+        noise_input = np.random.uniform(low=-1, high=1, size=[self.data.batch_size, self.noise_size])
         return noise_input
 
     def smoothed_labels(self, labels):
@@ -135,7 +135,7 @@ class AdversarialNetwork:
                       '\t\t| d-loss on batch =', str(round(d_loss, 4)),
                       '\t\t| g-loss on batch =', str(round(g_loss, 4)))
 
-                if step % 10 == 0:
+                if step % 500 == 0:
                     self.visualize(step)
 
             d_losses_tot.append(np.mean(d_losses))

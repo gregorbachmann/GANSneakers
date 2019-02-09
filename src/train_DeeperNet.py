@@ -1,7 +1,7 @@
 import os
 
 import tensorflow as tf
-from src.models.FirstNet import FirstNet
+from src.models.DeeperNet import DeeperNet
 from datasources.data import DataReader
 
 
@@ -32,13 +32,13 @@ def main():
                           prefetch_buffer_size=prefetch_buffer_size,
                           img_size=img_size)
 
-        learning_schedule = {'d_rate': 1e-4, 'g_rate': 1e-3, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
+        learning_schedule = {'d_rate': 1e-3, 'g_rate': 1e-3, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
 
         # Initialize model object
-        model = FirstNet(tf_session=sess,
-                         learning_schedule=learning_schedule,
-                         data=data,
-                         noise_size=noise_size)
+        model = DeeperNet(tf_session=sess,
+                          learning_schedule=learning_schedule,
+                          data=data,
+                          noise_size=noise_size)
         model.train()
 
 
