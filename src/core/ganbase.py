@@ -1,17 +1,21 @@
 import tensorflow as tf
 import numpy as np
 import cv2 as cv2
+from src.core.SummaryManager import SummaryManager
 
 
 class AdversarialNetwork:
 
-    def __init__(self, tf_session: tf.Session, data, noise_size, learning_schedule):
+    def __init__(self, tf_session: tf.Session, data, noise_size, learning_schedule, cheap_ops_step, expensive_ops_step):
         self.sess = tf_session
         self.learning_schedule = learning_schedule
         self.data = data
         self.noise_size = noise_size
+        self.cheap_ops_step = cheap_ops_step
+        self.expensive_ops_step = expensive_ops_step
 
         self.losses, self.train_step = self.build_graph()
+        self.summary_manager = SummaryManager()
 
     def generator(self, noisy_input):
         raise NotImplementedError('BaseModel::generator is not yet implemented.')
@@ -68,25 +72,26 @@ class AdversarialNetwork:
             d_loss_fake = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.fake_labels, logits=d_fake_logits)
             # Combine the two
             d_loss = tf.reduce_mean(d_loss_real + d_loss_fake)
+            self.summary_manager.scalar_summary(d_loss, 'd-loss')
 
         with tf.variable_scope('G-loss'):
             # Get loss for generator
             g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.ones_like(d_fake_logits),
                                                                             logits=d_fake_logits))
+            self.summary_manager.scalar_summary(d_loss, 'g-loss')
+
         trainable_vars = tf.trainable_variables()
         with tf.variable_scope('D-Optimizer'):
             d_vars = [var for var in trainable_vars if var.name.startswith("Discriminator")]
             d_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_schedule['d_rate'])
             d_train_step = d_optimizer.minimize(d_loss, var_list=d_vars)
+            self.summary_manager.gradient_norm(d_optimizer, d_loss, 'd-gradients/')
+
         with tf.variable_scope('G-Optimizer'):
             g_vars = [var for var in trainable_vars if var.name.startswith("Generator")]
             g_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_schedule['g_rate'])
             g_train_step = g_optimizer.minimize(g_loss, var_list=g_vars)
-
-        with tf.variable_scope('D-Gradients'):
-            d_grads = d_optimizer.compute_gradients(d_loss)
-        with tf.variable_scope('G-Gradients'):
-            g_grads = g_optimizer.compute_gradients(g_loss)
+            self.summary_manager.gradient_norm(g_optimizer, g_loss, 'g-gradients/')
 
         losses = {'d': d_loss, 'g': g_loss}
         train_step = {'d': d_train_step, 'g': g_train_step}
