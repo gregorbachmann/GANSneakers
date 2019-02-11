@@ -16,7 +16,7 @@ def main():
         dir_path = os.path.dirname(os.path.realpath(__file__))
         project_dir = os.path.split(dir_path)[0]
         if floyd_hub == True:
-            data_path = 'floydhub/datasets/sneakerdataset'
+            data_path = 'floyd/input/sneakerdataset'
         else:
             data_path = os.path.join(project_dir, 'data')
         output_path = project_dir + '/outputs/ResNetGAN'
