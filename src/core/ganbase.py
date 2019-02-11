@@ -162,7 +162,7 @@ class AdversarialNetwork:
                       '\t\t| d-loss on batch =', str(round(d_loss, 4)),
                       '\t\t| g-loss on batch =', str(round(g_loss, 4)))
 
-                if step % 10 == 0:
+                if step % self.vis_each_step == 0:
                     self.visualize(step)
 
                 if step % self.save_each_step == 0:
