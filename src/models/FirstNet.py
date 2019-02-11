@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.ganbase import AdversarialNetwork
+from src.core.ganbase import AdversarialNetwork
 
 
 class FirstNet(AdversarialNetwork):

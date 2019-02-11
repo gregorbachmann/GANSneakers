@@ -8,39 +8,45 @@ class DeeperNet(AdversarialNetwork):
     def generator(self, noisy_input):
         with tf.variable_scope('Generator', reuse=tf.AUTO_REUSE):
             with tf.variable_scope('Dense1', reuse=tf.AUTO_REUSE):
-                dense1 = tf.layers.Dense(units=7*7*512)
+                dense1 = tf.layers.Dense(units=6*4*1024)
                 x = dense1(noisy_input)
-                x = tf.reshape(x, (-1, 7, 7, 512))
-                # Output: 7x7x256
+                x = tf.reshape(x, (-1, 4, 6, 1024))
+                # Output: 4x6x1024
             with tf.variable_scope('TransposeConv1', reuse=tf.AUTO_REUSE):
-                deconv1 = tf.layers.Conv2DTranspose(256, kernel_size=3, strides=2, padding='same')
+                deconv1 = tf.layers.Conv2DTranspose(512, kernel_size=3, strides=2, padding='same')
                 x = deconv1(x)
                 x = tf.layers.batch_normalization(x)
                 x = tf.nn.leaky_relu(x, alpha=0.01)
-                # Output: 14x14x128
+                # Output: 8x12x512
             with tf.variable_scope('TransposeConv2', reuse=tf.AUTO_REUSE):
-                deconv2 = tf.layers.Conv2DTranspose(128, kernel_size=3, strides=2, padding='same')
+                deconv2 = tf.layers.Conv2DTranspose(256, kernel_size=3, strides=2, padding='same')
                 x = deconv2(x)
                 x = tf.layers.batch_normalization(x)
                 x = tf.nn.leaky_relu(x, alpha=0.01)
-                # Output: 28x28x128
+                # Output: 16x24x256
             with tf.variable_scope('TransposeConv3', tf.AUTO_REUSE):
-                deconv3 = tf.layers.Conv2DTranspose(64, kernel_size=3, strides=2, padding='same')
+                deconv3 = tf.layers.Conv2DTranspose(128, kernel_size=3, strides=2, padding='same')
                 x = deconv3(x)
                 x = tf.layers.batch_normalization(x)
                 x = tf.nn.leaky_relu(x, alpha=0.01)
-                # Output: 56x56x64
+                # Output: 32x48x128
             with tf.variable_scope('TransposeConv4', tf.AUTO_REUSE):
-                deconv4 = tf.layers.Conv2DTranspose(32, kernel_size=3, strides=2, padding='same')
+                deconv4 = tf.layers.Conv2DTranspose(64, kernel_size=3, strides=2, padding='same')
                 x = deconv4(x)
                 x = tf.layers.batch_normalization(x)
                 x = tf.nn.leaky_relu(x, alpha=0.01)
-                # Output: 112x112x32
+                # Output: 64x96x64
             with tf.variable_scope('TransposeConv5', tf.AUTO_REUSE):
-                deconv5 = tf.layers.Conv2DTranspose(3, kernel_size=3, strides=2, padding='same')
+                deconv5 = tf.layers.Conv2DTranspose(32, kernel_size=3, strides=2, padding='same')
                 x = deconv5(x)
+                x = tf.layers.batch_normalization(x)
+                x = tf.nn.leaky_relu(x, alpha=0.01)
+                # Output: 128x192x32
+            with tf.variable_scope('TransposeConv6', tf.AUTO_REUSE):
+                deconv6 = tf.layers.Conv2DTranspose(3, kernel_size=3, strides=2, padding='same')
+                x = deconv6(x)
                 output = tf.nn.tanh(x)
-                # Output: 224x224x3
+                # Output: 256x384x3
 
             return output, x
 

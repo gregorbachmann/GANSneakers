@@ -1,6 +1,6 @@
 # Don't upload the data
 data/
-output/
+outputs/
 
 .DS_Store
 .idea/
@@ -9,3 +9,8 @@ datasources/__pycache__/
 models/__pycache__/
 src/.DS_Store
 src/__pycache__/
+
+.floydexpt
+.floydignore
+floyd.yml
+*pyc

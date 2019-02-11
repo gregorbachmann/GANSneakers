@@ -2,7 +2,7 @@ import os
 import pathlib
 
 import tensorflow as tf
-from src.models.DeeperNet import DeeperNet
+from src.models.ResNetGAN import ResNetGAN
 from datasources.data import DataReader
 
 
@@ -10,12 +10,16 @@ def main():
 
     gpu_options = tf.GPUOptions(allow_growth=True)
     config = tf.ConfigProto(gpu_options=gpu_options)
+    floyd_hub = True
 
     with tf.Session(config=config) as sess:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         project_dir = os.path.split(dir_path)[0]
-        data_path = os.path.join(project_dir, 'data')
-        output_path = project_dir + '/outputs/DeeperNet'
+        if floyd_hub == True:
+            data_path = 'floydhub/datasets/sneakerdataset'
+        else:
+            data_path = os.path.join(project_dir, 'data')
+        output_path = project_dir + '/outputs/ResNetGAN'
         pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
 
         batch_size = 16
@@ -37,10 +41,10 @@ def main():
                           prefetch_buffer_size=prefetch_buffer_size,
                           img_size=img_size)
 
-        learning_schedule = {'d_rate': 1e-3, 'g_rate': 1e-3, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
+        learning_schedule = {'d_rate': 1e-4, 'g_rate': 1e-4, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
 
         # Initialize model object
-        model = DeeperNet(tf_session=sess,
+        model = ResNetGAN(tf_session=sess,
                           learning_schedule=learning_schedule,
                           data=data,
                           noise_size=noise_size,
