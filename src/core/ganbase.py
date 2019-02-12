@@ -42,7 +42,7 @@ class AdversarialNetwork:
         raise NotImplementedError('BaseModel::discriminator is not yet implemented.')
 
     def noise_generator(self):
-        noise_input = np.random.uniform(low=-1, high=1, size=[self.data.batch_size, self.noise_size])
+        noise_input = np.random.normal(loc=0, scale=4, size=[self.data.batch_size, self.noise_size])
         return noise_input
 
     def smoothed_labels(self, labels):
@@ -63,13 +63,21 @@ class AdversarialNetwork:
         else:
             return real_labels, fake_labels
 
+    def distance_feature(self, examples):
+        # Determine the closeness of inputs by comparing two randomly
+        index1 = int(np.random.uniform(low=0, high=self.data.batch_size, size=1))
+        index2 = int(np.random.uniform(low=0, high=self.data.batch_size, size=1))
+        diff = tf.reduce_mean(tf.squared_difference(examples[index1], examples[index2]))
+        diff = tf.zeros(self.data.batch_size) + diff
+        return tf.transpose(diff)
+
     def visualize(self, step):
         noisy_input = self.noise_generator()
-        picture, _ = self.sess.run(self.generator(self.noise_input), feed_dict={self.noise_input: noisy_input})
-        print(self.output_path)
+        pictures, _ = self.sess.run(self.generator(self.noise_input), feed_dict={self.noise_input: noisy_input})
+        pictures = (pictures+1)*(255/2)
+        merged_pic = np.block([[[pictures[0]], [pictures[1]]], [[pictures[2]], [pictures[3]]]])
         path = os.path.join(self.output_path, 'output_images')
-        print(path)
-        cv2.imwrite(path + '/vis' + str(step) + '.jpg', (picture[0]+1)*255/2)
+        cv2.imwrite(path + '/vis' + str(step) + '.jpg', merged_pic)
 
     def build_graph(self):
         with tf.name_scope('RealExamples'):

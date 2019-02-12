@@ -28,7 +28,8 @@ class DataReader():
     def get_img_paths(self):
         img_dir_names = []
         for img_name in os.listdir(self.data_path):
-            img_dir_names.append(os.path.join(self.data_path, img_name))
+            if img_name != '.floyddata':
+                img_dir_names.append(os.path.join(self.data_path, img_name))
 
         self.data_size = len(img_dir_names)
         print(self.data_size)

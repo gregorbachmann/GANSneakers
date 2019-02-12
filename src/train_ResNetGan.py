@@ -10,13 +10,13 @@ def main():
 
     gpu_options = tf.GPUOptions(allow_growth=True)
     config = tf.ConfigProto(gpu_options=gpu_options)
-    floyd_hub = True
+    floyd_hub = False
 
     with tf.Session(config=config) as sess:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         project_dir = os.path.split(dir_path)[0]
         if floyd_hub == True:
-            data_path = 'floyd/input/sneakerdataset'
+            data_path = 'floyd/input/ssneakerdataset'
         else:
             data_path = os.path.join(project_dir, 'data')
         output_path = project_dir + '/outputs/ResNetGAN'
@@ -31,7 +31,7 @@ def main():
         img_size = {'width': 384, 'height': 256}
         noise_size = 1000
         save_each_step = 1000
-        vis_each_step = 500
+        vis_each_step = 20
 
         # Initialize data Object
         data = DataReader(data_path=data_path,

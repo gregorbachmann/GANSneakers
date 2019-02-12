@@ -24,10 +24,10 @@ def main():
         buffer_size = 5000
         prefetch_buffer_size = 1  # number of batches consumed by one training step
         num_epochs = 1000
-        img_size = {'width': 384, 'height': 256}
-        noise_size = 1000
+        img_size = {'width': 256, 'height': 384}
+        noise_size = 500
         save_each_step = 1000
-        vis_each_step = 500
+        vis_each_step = 250
 
         # Initialize data Object
         data = DataReader(data_path=data_path,
@@ -37,7 +37,7 @@ def main():
                           prefetch_buffer_size=prefetch_buffer_size,
                           img_size=img_size)
 
-        learning_schedule = {'d_rate': 1e-3, 'g_rate': 1e-3, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
+        learning_schedule = {'d_rate': 1e-3, 'g_rate': 1e-4, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
 
         # Initialize model object
         model = DeeperNet(tf_session=sess,
