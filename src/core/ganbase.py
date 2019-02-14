@@ -38,7 +38,7 @@ class AdversarialNetwork:
     def generator(self, noisy_input):
         raise NotImplementedError('BaseModel::generator is not yet implemented.')
 
-    def discriminator(self):
+    def discriminator(self, example):
         raise NotImplementedError('BaseModel::discriminator is not yet implemented.')
 
     def noise_generator(self):
