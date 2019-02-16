@@ -15,7 +15,7 @@ def main():
     with tf.Session(config=config) as sess:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         project_dir = os.path.split(dir_path)[0]
-        if floyd_hub == True:
+        if floyd_hub:
             data_path = 'floyd/input/ssneakerdataset'
         else:
             data_path = os.path.join(project_dir, 'data')
