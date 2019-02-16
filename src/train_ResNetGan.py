@@ -28,7 +28,7 @@ def main():
         buffer_size = 5000
         prefetch_buffer_size = 1  # number of batches consumed by one training step
         num_epochs = 1000
-        img_size = {'width': 384, 'height': 256}
+        img_size = {'width': 64, 'height': 96}
         noise_size = 1000
         save_each_step = 1000
         vis_each_step = 20

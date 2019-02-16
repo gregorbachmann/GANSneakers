@@ -39,16 +39,17 @@ class ResNetGAN(AdversarialNetwork):
             with tf.variable_scope('TransposeIdentityBlock4', tf.AUTO_REUSE):
                 x = self.transposed_identity_block(x, [128, 128, 64])
                 # Output: 64x96x64
-            with tf.variable_scope('TransposeConvBlock4', tf.AUTO_REUSE):
-                x = self.transposed_conv_block(x, [32, 64, 64])
-                # Output: 128x192x32
-            with tf.variable_scope('TransposeIdentityBlock5', tf.AUTO_REUSE):
-                x = self.transposed_identity_block(x, [64, 64, 32])
-                # Output: 128x192x32
-            with tf.variable_scope('TransposeConvBlock5', tf.AUTO_REUSE):
-                x = self.transposed_conv_block(x, [3, 32, 32])
+            with tf.variable_scope('TransposeConv2', tf.AUTO_REUSE):
+                deconv2 = tf.layers.Conv2DTranspose(16, kernel_size=3, strides=1, padding='same')
+                x = deconv2(x)
+                x = tf.layers.batch_normalization(x)
+                x = tf.nn.leaky_relu(x, alpha=0.1)
+                # Output: 64x96x16
+            with tf.variable_scope('TransposeConv3', tf.AUTO_REUSE):
+                deconv3 = tf.layers.Conv2DTranspose(3, kernel_size=3, strides=1, padding='same')
+                x = deconv3(x)
                 output = tf.nn.tanh(x)
-                # Output: 256x384x3
+                # Output: 64x96x3
 
             return output, x
 
