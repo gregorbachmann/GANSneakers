@@ -224,3 +224,48 @@ class AdversarialNetwork:
             d_losses_tot.append(np.mean(d_losses))
             g_losses_tot.append(np.mean(g_losses))
 
+    def interpolate(self, z1, z2):
+        diff = z2-z1
+        img1, _ = self.sess.run(self.generator(self.noise_input),
+                                feed_dict={self.noise_input: np.reshape(z1, [1, -1])})
+        img1 = (img1 + 1) * (255 / 2)
+        img1 = cv2.resize(img1[0], dsize=(96, 72))
+        img2, _ = self.sess.run(self.generator(self.noise_input),
+                                feed_dict={self.noise_input: np.reshape(z2, [1, -1])})
+        img2 = (img2 + 1) * (255 / 2)
+
+        img2 = cv2.resize(img2[0], dsize=(96, 72))
+        interpol = img1.T
+        for i in range(self.data.batch_size):
+            z_inter = z1 + i/self.data.batch_size*diff
+            img, _ = self.sess.run(self.generator(self.noise_input),
+                                   feed_dict={self.noise_input: np.reshape(z_inter, [1, -1])})
+            img = (img + 1) * (255 / 2)
+            img = cv2.resize(img[0], dsize=(96, 72))
+            interpol = np.block([interpol, img.T])
+
+        interpol = np.block([interpol, img2.T])
+        path = os.path.join(self.output_path, 'output_images')
+        cv2.imwrite(path + '/interpol' + '.jpg', interpol.T)
+
+    def test(self):
+        imgs = []
+        for _ in range(self.data.batch_size):
+            noisy_input = self.noise_generator()
+            pictures, _ = self.sess.run(self.generator(self.noise_input), feed_dict={self.noise_input: noisy_input})
+            pictures = (pictures + 1) * (255 / 2)
+            intermed = []
+            for img in pictures:
+                img = cv2.resize(img, dsize=(96, 72))
+                intermed.append(img.T)
+            imgs.append(intermed)
+
+        merged_pic = np.block(imgs)
+        path = os.path.join(self.output_path, 'output_images')
+        cv2.imwrite(path + '/final_img' + '.jpg', merged_pic.T)
+
+        self.interpolate(noisy_input[0, :], noisy_input[1, :])
+
+
+
+

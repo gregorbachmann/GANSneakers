@@ -23,7 +23,7 @@ def main():
         num_threads = 4
         buffer_size = 5000
         prefetch_buffer_size = 1  # number of batches consumed by one training step
-        num_epochs = 1000
+        num_epochs = 0
         img_size = {'width': 256, 'height': 384}
         noise_size = 500
         save_each_step = 1000
@@ -50,6 +50,7 @@ def main():
                           save_each_step=save_each_step,
                           vis_each_step=vis_each_step)
         model.train()
+        model.test()
 
 
 if __name__ == "__main__":
