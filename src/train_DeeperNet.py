@@ -1,5 +1,6 @@
 import os
 import pathlib
+import numpy as np
 
 import tensorflow as tf
 from src.models.DeeperNet import DeeperNet
@@ -38,6 +39,7 @@ def main():
                           img_size=img_size)
 
         learning_schedule = {'d_rate': 1e-3, 'g_rate': 1e-4, 'num_epochs': num_epochs, 'd_steps': 1, 'g_steps': 1}
+        theta = np.pi/2
 
         # Initialize model object
         model = DeeperNet(tf_session=sess,
@@ -48,7 +50,8 @@ def main():
                           expensive_ops_step=1,
                           output_path=output_path,
                           save_each_step=save_each_step,
-                          vis_each_step=vis_each_step)
+                          vis_each_step=vis_each_step,
+                          theta=theta)
         model.train()
         model.test()
 

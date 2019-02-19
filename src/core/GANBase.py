@@ -34,7 +34,8 @@ class AdversarialNetwork:
                  expensive_ops_step,
                  output_path,
                  save_each_step,
-                 vis_each_step):
+                 vis_each_step,
+                 theta):
 
         self.sess = tf_session
         self.learning_schedule = learning_schedule
@@ -45,6 +46,7 @@ class AdversarialNetwork:
         self.output_path = output_path
         self.save_each_step = save_each_step
         self.vis_each_step = vis_each_step
+        self.theta = theta
 
         self.checkpoint_manager = CheckpointManager(self)
         self.time_manager = TimeManager(self)
@@ -225,11 +227,11 @@ class AdversarialNetwork:
             g_losses_tot.append(np.mean(g_losses))
 
     def interpolate(self, z1, z2):
-        diff = z2-z1
         img1, _ = self.sess.run(self.generator(self.noise_input),
                                 feed_dict={self.noise_input: np.reshape(z1, [1, -1])})
         img1 = (img1 + 1) * (255 / 2)
         img1 = cv2.resize(img1[0], dsize=(96, 72))
+
         img2, _ = self.sess.run(self.generator(self.noise_input),
                                 feed_dict={self.noise_input: np.reshape(z2, [1, -1])})
         img2 = (img2 + 1) * (255 / 2)
@@ -237,7 +239,8 @@ class AdversarialNetwork:
         img2 = cv2.resize(img2[0], dsize=(96, 72))
         interpol = img1.T
         for i in range(self.data.batch_size//2-1):
-            z_inter = z1 + (i+1)/self.data.batch_size*diff
+            mu = (i+1)/(self.data.batch_size//2)
+            z_inter = np.sin(self.theta*(1-mu))/np.sin(self.theta)*z1 + np.sin(self.theta*mu)/np.sin(self.theta)*z2
             img, _ = self.sess.run(self.generator(self.noise_input),
                                    feed_dict={self.noise_input: np.reshape(z_inter, [1, -1])})
             img = (img + 1) * (255 / 2)
@@ -246,10 +249,9 @@ class AdversarialNetwork:
 
         interpol = np.block([[interpol], [img2.T]])
         return interpol
-#        path = os.path.join(self.output_path, 'output_images')
-#        cv2.imwrite(path + '/interpol' + '.jpg', interpol.T)
 
     def test(self):
+        # Sample from final model
         imgs = []
         for _ in range(self.data.batch_size):
             noisy_input = self.noise_generator()
@@ -265,6 +267,7 @@ class AdversarialNetwork:
         path = os.path.join(self.output_path, 'output_images')
         cv2.imwrite(path + '/final_img' + '.jpg', merged_pic.T)
 
+        # Make circular interpolations
         full_interpol = self.interpolate(noisy_input[0, :], noisy_input[1, :])
         for i in range(self.data.batch_size//2):
             interpol = self.interpolate(noisy_input[0, :], noisy_input[i+2, :])

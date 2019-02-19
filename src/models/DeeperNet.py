@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.core.ganbase import AdversarialNetwork
+from src.core.GANBase import AdversarialNetwork
 
 
 class DeeperNet(AdversarialNetwork):
