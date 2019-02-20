@@ -11,11 +11,15 @@ def main():
 
     gpu_options = tf.GPUOptions(allow_growth=True)
     config = tf.ConfigProto(gpu_options=gpu_options)
+    floydhub = True
 
     with tf.Session(config=config) as sess:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         project_dir = os.path.split(dir_path)[0]
-        data_path = os.path.join(project_dir, 'data')
+        if floydhub:
+            data_path = '/my_data'
+        else:
+            data_path = os.path.join(project_dir, 'data')
         output_path = project_dir + '/outputs/DeeperNet'
         pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
 
@@ -24,7 +28,7 @@ def main():
         num_threads = 4
         buffer_size = 5000
         prefetch_buffer_size = 1  # number of batches consumed by one training step
-        num_epochs = 0
+        num_epochs = 1
         img_size = {'width': 256, 'height': 384}
         noise_size = 500
         save_each_step = 1000
