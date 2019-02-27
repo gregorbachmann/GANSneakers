@@ -25,8 +25,8 @@ def main():
 
         batch_size = 16
 
-        num_threads = 4
-        buffer_size = 5000
+        num_threads = 2
+        buffer_size = 2000
         prefetch_buffer_size = 1  # number of batches consumed by one training step
         num_epochs = 1
         img_size = {'width': 256, 'height': 384}

@@ -1,7 +1,6 @@
 import os
 
 import tensorflow as tf
-from models import FirstNet
 
 
 class DataReader():
